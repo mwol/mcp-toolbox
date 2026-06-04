@@ -73,8 +73,8 @@ func (t MockTool) EmbedParams(ctx context.Context, paramValues parameters.ParamV
 	return parameters.EmbedParams(ctx, t.Params, paramValues, embeddingModelsMap, nil)
 }
 
-func (t MockTool) Manifest() tools.Manifest {
-	return t.manifest
+func (t MockTool) Manifest(tools.SourceProvider) (tools.Manifest, error) {
+	return t.manifest, nil
 }
 
 func (t MockTool) Authorized(verifiedAuthServices []string) bool {
@@ -87,8 +87,8 @@ func (t MockTool) RequiresClientAuthorization(tools.SourceProvider) (bool, error
 	return t.requireClientAuthorization, nil
 }
 
-func (t MockTool) GetParameters() parameters.Parameters {
-	return t.Params
+func (t MockTool) GetParameters(tools.SourceProvider) (parameters.Parameters, error) {
+	return t.Params, nil
 }
 
 func (t MockTool) GetName() string {

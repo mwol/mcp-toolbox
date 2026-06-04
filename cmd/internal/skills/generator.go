@@ -83,7 +83,10 @@ func generateSkillMarkdown(sp tools.SourceProvider, skillName, skillDescription,
 
 	for _, name := range toolNames {
 		tool := toolsMap[name]
-		manifest := tool.Manifest()
+		manifest, err := tool.Manifest(sp)
+		if err != nil {
+			return "", fmt.Errorf("error generating manifest for tool %q: %w", name, err)
+		}
 
 		parametersSchema, err := formatParameters(manifest.Parameters, envVars)
 		if err != nil {

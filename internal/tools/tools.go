@@ -65,7 +65,7 @@ func DecodeConfig(ctx context.Context, resourceType string, name string, decoder
 
 type ToolConfig interface {
 	ToolConfigType() string
-	Initialize(map[string]sources.Source) (Tool, error)
+	Initialize() (Tool, error)
 }
 
 // https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations
@@ -127,12 +127,12 @@ type Tool interface {
 	GetAnnotations() *ToolAnnotations
 	Invoke(context.Context, SourceProvider, parameters.ParamValues, AccessToken) (any, util.ToolboxError)
 	EmbedParams(context.Context, parameters.ParamValues, map[string]embeddingmodels.EmbeddingModel) (parameters.ParamValues, error)
-	Manifest() Manifest
+	Manifest(SourceProvider) (Manifest, error)
 	Authorized([]string) bool
 	RequiresClientAuthorization(SourceProvider) (bool, error)
 	ToConfig() ToolConfig
 	GetAuthTokenHeaderName(SourceProvider) (string, error)
-	GetParameters() parameters.Parameters
+	GetParameters(SourceProvider) (parameters.Parameters, error)
 	GetScopesRequired() []string
 }
 
@@ -230,10 +230,16 @@ func (b BaseTool[T]) GetDescription() string           { return b.Cfg.GetDescrip
 func (b BaseTool[T]) GetAuthRequired() []string        { return b.Cfg.GetAuthRequired() }
 func (b BaseTool[T]) GetScopesRequired() []string      { return b.Cfg.GetScopesRequired() }
 func (b BaseTool[T]) GetAnnotations() *ToolAnnotations { return b.annotations }
-func (b BaseTool[T]) Manifest() Manifest               { return b.metadata }
 
-func (b BaseTool[T]) GetParameters() parameters.Parameters {
-	return b.StaticParameters
+// Manifest returns the precomputed metadata. It and GetParameters stay trivial
+// and never call each other: embedded methods have no virtual dispatch, so a
+// BaseTool method calling another would miss a concrete tool's override.
+func (b BaseTool[T]) Manifest(_ SourceProvider) (Manifest, error) {
+	return b.metadata, nil
+}
+
+func (b BaseTool[T]) GetParameters(_ SourceProvider) (parameters.Parameters, error) {
+	return b.StaticParameters, nil
 }
 
 func (b BaseTool[T]) Authorized(verifiedAuthServices []string) bool {

@@ -97,7 +97,11 @@ func GenerateListToolsResult(sp tools.SourceProvider, t tools.Toolset, toolsMap 
 		if !ok {
 			return ListToolsResult{}, fmt.Errorf("tool does not exist: %s", toolName)
 		}
-		toolManifest := generateToolManifest(toolName, tool.GetDescription(), tool.GetAuthRequired(), tool.GetParameters(), tool.GetAnnotations())
+		params, err := tool.GetParameters(sp)
+		if err != nil {
+			return ListToolsResult{}, fmt.Errorf("error getting parameters for tool %q: %w", toolName, err)
+		}
+		toolManifest := generateToolManifest(toolName, tool.GetDescription(), tool.GetAuthRequired(), params, tool.GetAnnotations())
 		mcpManifest = append(mcpManifest, toolManifest)
 	}
 	return ListToolsResult{Tools: mcpManifest}, nil

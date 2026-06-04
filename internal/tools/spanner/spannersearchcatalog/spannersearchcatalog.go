@@ -21,7 +21,6 @@ import (
 
 	"github.com/goccy/go-yaml"
 	"github.com/googleapis/mcp-toolbox/internal/embeddingmodels"
-	"github.com/googleapis/mcp-toolbox/internal/sources"
 	"github.com/googleapis/mcp-toolbox/internal/sources/dataplex/searchcatalog"
 	"github.com/googleapis/mcp-toolbox/internal/tools"
 	"github.com/googleapis/mcp-toolbox/internal/util"
@@ -67,7 +66,7 @@ func (cfg Config) ToolConfigType() string {
 	return resourceType
 }
 
-func (cfg Config) Initialize(srcs map[string]sources.Source) (tools.Tool, error) {
+func (cfg Config) Initialize() (tools.Tool, error) {
 	prompt := parameters.NewStringParameter("prompt", "Prompt representing search intention. Do not rewrite the prompt.")
 
 	databaseIds := parameters.NewArrayParameterWithDefault(
@@ -178,16 +177,16 @@ func (t Tool) EmbedParams(ctx context.Context, paramValues parameters.ParamValue
 	return parameters.EmbedParams(ctx, t.Parameters, paramValues, embeddingModelsMap, nil)
 }
 
-func (t Tool) Manifest() tools.Manifest {
-	return t.manifest
+func (t Tool) Manifest(sp tools.SourceProvider) (tools.Manifest, error) {
+	return t.manifest, nil
 }
 
 func (t Tool) GetAuthTokenHeaderName(resourceMgr tools.SourceProvider) (string, error) {
 	return "", nil
 }
 
-func (t Tool) GetParameters() parameters.Parameters {
-	return t.Parameters
+func (t Tool) GetParameters(sp tools.SourceProvider) (parameters.Parameters, error) {
+	return t.Parameters, nil
 }
 
 func (t Tool) GetScopesRequired() []string {

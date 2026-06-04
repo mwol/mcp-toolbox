@@ -273,7 +273,12 @@ func toolsCallHandler(ctx context.Context, id jsonrpc.RequestId, toolset tools.T
 		return jsonrpc.NewError(id, jsonrpc.INVALID_REQUEST, err.Error(), nil), err
 	}
 
-	params, err := parameters.ParseParams(tool.GetParameters(), data, claimsFromAuth)
+	toolParams, err := tool.GetParameters(resourceMgr)
+	if err != nil {
+		err = fmt.Errorf("error getting parameters for tool: %w", err)
+		return jsonrpc.NewError(id, jsonrpc.INTERNAL_ERROR, err.Error(), nil), err
+	}
+	params, err := parameters.ParseParams(toolParams, data, claimsFromAuth)
 	if err != nil {
 		err = fmt.Errorf("provided parameters were invalid: %w", err)
 		return jsonrpc.NewError(id, jsonrpc.INVALID_PARAMS, err.Error(), nil), err

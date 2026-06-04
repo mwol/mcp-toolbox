@@ -20,7 +20,6 @@ import (
 	"net/http"
 
 	"github.com/goccy/go-yaml"
-	"github.com/googleapis/mcp-toolbox/internal/sources"
 	"github.com/googleapis/mcp-toolbox/internal/tools"
 	"github.com/googleapis/mcp-toolbox/internal/tools/cloudhealthcare/common"
 	"github.com/googleapis/mcp-toolbox/internal/util"
@@ -64,34 +63,17 @@ func (cfg Config) ToolConfigType() string {
 	return resourceType
 }
 
-func (cfg Config) Initialize(srcs map[string]sources.Source) (tools.Tool, error) {
+func (cfg Config) Initialize() (tools.Tool, error) {
 	if cfg.Description == "" {
 		return nil, fmt.Errorf("description is required for tool %q", cfg.Name)
-	}
-
-	// verify source exists
-	rawS, ok := srcs[cfg.Source]
-	if !ok {
-		return nil, fmt.Errorf("no source named %q configured", cfg.Source)
-	}
-
-	// verify the source is compatible
-	s, ok := rawS.(compatibleSource)
-	if !ok {
-		return nil, fmt.Errorf("invalid source for %q tool: source %q not compatible", resourceType, cfg.Source)
-	}
-
-	allParameters := parameters.Parameters{}
-	if len(s.AllowedDICOMStores()) != 1 {
-		allParameters = append(allParameters, parameters.NewStringParameter(common.StoreKey, "The DICOM store ID to get details for."))
 	}
 
 	return Tool{
 		BaseTool: tools.NewBaseTool(
 			cfg,
 			tools.GetAnnotationsOrDefault(cfg.Annotations, tools.NewReadOnlyAnnotations),
-			tools.Manifest{Description: cfg.Description, Parameters: allParameters.Manifest(), AuthRequired: cfg.AuthRequired},
-			allParameters,
+			tools.Manifest{Description: cfg.Description, AuthRequired: cfg.AuthRequired},
+			nil,
 		),
 	}, nil
 }
@@ -136,4 +118,32 @@ func (t Tool) RequiresClientAuthorization(resourceMgr tools.SourceProvider) (boo
 		return false, err
 	}
 	return source.UseClientAuthorization(), nil
+}
+
+// resolveParams builds the tool's parameters using the source's configured FHIR/DICOM stores.
+func (t Tool) resolveParams(sp tools.SourceProvider) (parameters.Parameters, error) {
+	s, err := tools.GetCompatibleSource[compatibleSource](sp, t.Cfg.Source, t.Cfg.Name, t.Cfg.Type)
+	if err != nil {
+		return nil, err
+	}
+
+	allParameters := parameters.Parameters{}
+	if len(s.AllowedDICOMStores()) != 1 {
+		allParameters = append(allParameters, parameters.NewStringParameter(common.StoreKey, "The DICOM store ID to get details for."))
+	}
+	return allParameters, nil
+}
+
+// GetParameters returns the tool's parameters, resolved against the source.
+func (t Tool) GetParameters(sp tools.SourceProvider) (parameters.Parameters, error) {
+	return t.resolveParams(sp)
+}
+
+// Manifest returns the tool's manifest, resolved against the source.
+func (t Tool) Manifest(sp tools.SourceProvider) (tools.Manifest, error) {
+	allParameters, err := t.resolveParams(sp)
+	if err != nil {
+		return tools.Manifest{}, err
+	}
+	return tools.Manifest{Description: t.Cfg.Description, Parameters: allParameters.Manifest(), AuthRequired: t.Cfg.AuthRequired}, nil
 }

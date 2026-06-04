@@ -22,7 +22,6 @@ import (
 
 	yaml "github.com/goccy/go-yaml"
 	"github.com/googleapis/mcp-toolbox/internal/embeddingmodels"
-	"github.com/googleapis/mcp-toolbox/internal/sources"
 	"github.com/googleapis/mcp-toolbox/internal/tools"
 	"github.com/googleapis/mcp-toolbox/internal/util"
 	"github.com/googleapis/mcp-toolbox/internal/util/parameters"
@@ -93,7 +92,7 @@ func (cfg Config) ToolConfigType() string {
 	return resourceType
 }
 
-func (cfg Config) Initialize(srcs map[string]sources.Source) (tools.Tool, error) {
+func (cfg Config) Initialize() (tools.Tool, error) {
 	allParameters := parameters.Parameters{
 		parameters.NewStringParameterWithDefault("schema_name", "public", "Optional parameter: Schema name of the table."),
 		parameters.NewStringParameterWithRequired("table_name", "Table name experiencing degraded vector search recall.", true),
@@ -224,8 +223,8 @@ func (t Tool) EmbedParams(ctx context.Context, paramValues parameters.ParamValue
 	return parameters.EmbedParams(ctx, t.allParams, paramValues, embeddingModelsMap, nil)
 }
 
-func (t Tool) Manifest() tools.Manifest {
-	return t.manifest
+func (t Tool) Manifest(sp tools.SourceProvider) (tools.Manifest, error) {
+	return t.manifest, nil
 }
 
 func (t Tool) Authorized(verifiedAuthServices []string) bool {
@@ -240,8 +239,8 @@ func (t Tool) GetAuthTokenHeaderName(resourceMgr tools.SourceProvider) (string, 
 	return "Authorization", nil
 }
 
-func (t Tool) GetParameters() parameters.Parameters {
-	return t.allParams
+func (t Tool) GetParameters(sp tools.SourceProvider) (parameters.Parameters, error) {
+	return t.allParams, nil
 }
 
 func (t Tool) GetScopesRequired() []string {

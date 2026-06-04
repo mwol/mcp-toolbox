@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.4.0](https://github.com/googleapis/mcp-toolbox/compare/v1.3.0...v1.4.0) (2026-06-04)
+
+
+### Features
+
+* Add Python wheel packaging for UVX support ([#3266](https://github.com/googleapis/mcp-toolbox/issues/3266)) ([d290745](https://github.com/googleapis/mcp-toolbox/commit/d290745b61c3bcc6ecb54fee316127e1fee1860a))
+* **datalineage:** Add Data Lineage integration ([#3285](https://github.com/googleapis/mcp-toolbox/issues/3285)) ([19353c3](https://github.com/googleapis/mcp-toolbox/commit/19353c37e17ab1f3599cafa04337a32a7baec1c3))
+* **spanner:** Implement search_catalog tool and add docs/tests ([#3140](https://github.com/googleapis/mcp-toolbox/issues/3140)) ([defc086](https://github.com/googleapis/mcp-toolbox/commit/defc0860c8876fcd465728ac6ce41de8262ed572))
+* **tools/cloudsqlpg:** Add remaining vector assist tools for Cloud SQL Postgres ([#3203](https://github.com/googleapis/mcp-toolbox/issues/3203)) ([b514cbd](https://github.com/googleapis/mcp-toolbox/commit/b514cbd7be2dbf49276f2327059194f9e7dc1be1))
+
+
+### Bug Fixes
+
+* **oracle:** Remove trailing semicolons from prebuilt tools and clean… ([#3215](https://github.com/googleapis/mcp-toolbox/issues/3215)) ([fcad02d](https://github.com/googleapis/mcp-toolbox/commit/fcad02de73ffe9c6ecf29572f0f92674aacbe493))
+* **server/auth:** Centralize tool scopes validation ([#3335](https://github.com/googleapis/mcp-toolbox/issues/3335)) ([adce4ab](https://github.com/googleapis/mcp-toolbox/commit/adce4abb27327aae4e9736581df7a544b55c939e))
+* **server:** Return null id for batch request rejection ([#3333](https://github.com/googleapis/mcp-toolbox/issues/3333)) ([0b18d58](https://github.com/googleapis/mcp-toolbox/commit/0b18d58aea131baceb1c70f300879de8ecdf569e))
+* **source/dataplex:** Limit search results to pageSize ([#3323](https://github.com/googleapis/mcp-toolbox/issues/3323)) ([905c1f6](https://github.com/googleapis/mcp-toolbox/commit/905c1f68fcdb848d014aeaed3193af2f94fac507)), closes [#3308](https://github.com/googleapis/mcp-toolbox/issues/3308)
+* **telemetry:** Allow GCP project override ([#2960](https://github.com/googleapis/mcp-toolbox/issues/2960)) ([3c83ba5](https://github.com/googleapis/mcp-toolbox/commit/3c83ba5ab1d2ab38369e0b5c47396fabf6ecabef))
+* **tools/clickhouse,tools/bigquery:** Validate identifier parameters to prevent injection ([#3219](https://github.com/googleapis/mcp-toolbox/issues/3219)) ([2f45f75](https://github.com/googleapis/mcp-toolbox/commit/2f45f75525ac1b5dbbe3056e07441ef9a3bd6680))
+* **tools/looker:** Escape filter values for unquoted parameters ([#3289](https://github.com/googleapis/mcp-toolbox/issues/3289)) ([1711156](https://github.com/googleapis/mcp-toolbox/commit/17111562dc2585c7372798f7f18e5ff3d32d21fe))
+
 ## [1.3.0](https://github.com/googleapis/mcp-toolbox/compare/v1.2.0...v1.3.0) (2026-05-21)
 
 
